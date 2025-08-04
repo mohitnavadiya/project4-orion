@@ -1,17 +1,31 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from pydantic import BaseModel
+from datetime import datetime
 import time
 import random
 
 router = APIRouter()
 
+# In-memory store
+metrics_store = {
+    "player_inference_calls": 0,
+    "last_result": None
+}
+
+# Response model
+class PlayerInferenceResponse(BaseModel):
+    label: str
+    confidence: float
+    timestamp: str
+
+# Input model
 class InferenceInput(BaseModel):
     file_path: str
 
-@router.post("/inference/")
+# Dummy simulation endpoint
+@router.post("/simulate")
 def run_inference(data: InferenceInput):
     try:
-        # Simulate model processing
         time.sleep(1)
         return {
             "file": data.file_path,
@@ -20,3 +34,15 @@ def run_inference(data: InferenceInput):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Real-time player inference endpoint
+@router.post("/player", response_model=PlayerInferenceResponse)
+async def infer_player(file: UploadFile = File(...)):
+    result = {
+        "label": "player",
+        "confidence": 0.92,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    metrics_store["player_inference_calls"] += 1
+    metrics_store["last_result"] = result
+    return result
