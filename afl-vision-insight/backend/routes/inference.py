@@ -1,22 +1,15 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
-import time
-import random
 
 router = APIRouter()
 
-class InferenceInput(BaseModel):
+class InferenceRequest(BaseModel):
     file_path: str
 
-@router.post("/inference/")
-def run_inference(data: InferenceInput):
-    try:
-        # Simulate model processing
-        time.sleep(1)
-        return {
-            "file": data.file_path,
-            "prediction": random.choice(["Player Detected", "Ball Detected", "No Detection"]),
-            "confidence": round(random.uniform(0.6, 0.95), 2)
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@router.post("/inference/player")
+def run_inference(req: InferenceRequest):
+    # Placeholder logic before dummy model was added
+    return {
+        "message": f"Inference would be run on: {req.file_path}"
+    }
+
