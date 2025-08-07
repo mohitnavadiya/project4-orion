@@ -1,13 +1,19 @@
 from fastapi import APIRouter
-import time
-
+from fastapi.responses import JSONResponse
+from routes import metrics_store
+ 
 router = APIRouter()
-
-@router.get("/metrics/")
-def get_metrics():
-    # Dummy metrics – you can later hook this to real tracking
-    return {
-        "model_accuracy": 0.92,
-        "avg_inference_time": "1.2s",
-        "last_updated": time.strftime("%Y-%m-%d %H:%M:%S")
+ 
+@router.get("/")
+async def get_metrics():
+    metrics_data = {
+        "player_tracking": {
+            "calls": metrics_store.player_tracking_calls,
+            "last_output": metrics_store.last_player_tracking_output
+        },
+        "crowd_monitoring": {
+            "calls": metrics_store.crowd_monitoring_calls,
+            "last_output": metrics_store.last_crowd_monitoring_output
+        }
     }
+    return JSONResponse(content=metrics_data)
