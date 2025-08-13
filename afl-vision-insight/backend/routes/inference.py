@@ -4,7 +4,7 @@
 from fastapi import APIRouter, UploadFile, Form, HTTPException
 import requests
 from backend.routes.metrics_store import metrics_store  # ✅ Safe import
-=======
+
 # routes/inference.py
 
 from fastapi import APIRouter, File, UploadFile, HTTPException
@@ -12,13 +12,13 @@ import os
 import uuid
 import shutil
 import requests
->>>>>>> upstream/main
+
 
 router = APIRouter()
 UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-<<<<<<< HEAD
+
 @router.post("/api/v1/inference/player")
 async def inference_player(file: UploadFile = None, frame_id: str = Form(None)):
     try:
@@ -43,7 +43,7 @@ async def inference_player(file: UploadFile = None, frame_id: str = Form(None)):
 
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=str(e))
-=======
+
 # External ML Microservices
 PLAYER_TRACKING_URL = "http://localhost:8001/track-players"
 CROWD_MONITORING_URL = "http://localhost:8002/analyze-crowd/"
@@ -108,4 +108,4 @@ async def crowd_monitoring(image: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to connect to crowd monitoring service: {str(e)}")
->>>>>>> upstream/main
+

@@ -1,5 +1,3 @@
-# backend/main.py
-
 from fastapi import FastAPI
 from backend.routes import upload, inference, metrics
 

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form
-from . import tracker, model, dummy_model  # relative import
+from . import tracker, model, dummy_model  
 
 app = FastAPI()
 
