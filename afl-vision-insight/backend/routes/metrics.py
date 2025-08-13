@@ -1,19 +1,11 @@
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse
-from routes import metrics_store
- 
+import backend.routes.metrics_store as store
+
 router = APIRouter()
- 
-@router.get("/")
+
+@router.get("/api/v1/metrics")
 async def get_metrics():
-    metrics_data = {
-        "player_tracking": {
-            "calls": metrics_store.player_tracking_calls,
-            "last_output": metrics_store.last_player_tracking_output
-        },
-        "crowd_monitoring": {
-            "calls": metrics_store.crowd_monitoring_calls,
-            "last_output": metrics_store.last_crowd_monitoring_output
-        }
+    return {
+        "status": "success",
+        "metrics": store.metrics_store
     }
-    return JSONResponse(content=metrics_data)

@@ -1,16 +1,22 @@
-# backend/uploaded_files/player_tracking_service/main.py
+from fastapi import FastAPI, UploadFile, File, Form
+from . import tracker, model, dummy_model  # relative import
 
-from fastapi import FastAPI
-from .schemas import InferenceRequest, InferenceResponse
-from .model import run_dummy_inference
+app = FastAPI()
 
-app = FastAPI(title="Player Tracking Microservice")
-
-@app.post("/inference/player", response_model=InferenceResponse)
-def infer_player(request: InferenceRequest):
-    result = run_dummy_inference(request.file_path)
-    return result
-
-@app.get("/ping")
-async def ping():
-    return {"status": "running"}
+@app.post("/inference/player")
+async def dummy_inference(file: UploadFile = File(...), frame_id: str = Form(...)):
+    return {
+        "video_info": {
+            "frame_id": frame_id or "123",
+            "width": 1920,
+            "height": 1080
+        },
+        "tracking_results": [
+            {
+                "player_id": "player1",
+                "bbox": [100, 150, 200, 300],
+                "center": [150, 225],
+                "confidence": 0.85
+            }
+        ]
+    }

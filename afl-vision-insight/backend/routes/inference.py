@@ -1,22 +1,32 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-import time
-import random
+# backend/routes/inference.py
+
+from fastapi import APIRouter, UploadFile, Form, HTTPException
+import requests
+from backend.routes.metrics_store import metrics_store  # ✅ Safe import
 
 router = APIRouter()
 
-class InferenceInput(BaseModel):
-    file_path: str
-
-@router.post("/inference/")
-def run_inference(data: InferenceInput):
+@router.post("/api/v1/inference/player")
+async def inference_player(file: UploadFile = None, frame_id: str = Form(None)):
     try:
-        # Simulate model processing
-        time.sleep(1)
+        if not file and not frame_id:
+            raise HTTPException(status_code=400, detail="Either file or frame_id must be provided.")
+
+        url = "http://player_tracking_service:8001/inference/player"
+
+        files = {"file": (file.filename, file.file, file.content_type)} if file else None
+        data = {"frame_id": frame_id} if frame_id else None
+
+        response = requests.post(url, files=files, data=data)
+        response.raise_for_status()
+
+        result = response.json()
+        metrics_store["inference_calls"] += 1
+
         return {
-            "file": data.file_path,
-            "prediction": random.choice(["Player Detected", "Ball Detected", "No Detection"]),
-            "confidence": round(random.uniform(0.6, 0.95), 2)
+            "status": "success",
+            "data": result.get("tracking_results", [])
         }
-    except Exception as e:
+
+    except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=str(e))
